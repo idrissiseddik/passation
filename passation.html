@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passation d'Équipe</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #e8f0fe; /* Couleur de fond douce */
+            color: #333; /* Couleur du texte */
+        }
+        h1 {
+            color: #4CAF50; /* Couleur du titre */
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50; /* Vert */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px; /* Coins arrondis */
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049; /* Couleur au survol */
+        }
+        .message-list {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            background: white; /* Couleur de fond des messages */
+            border-radius: 5px; /* Coins arrondis */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+            padding: 15px; /* Espacement interne */
+        }
+        .message {
+            margin-bottom: 20px; /* Augmenter l'espacement entre les messages */
+            border-bottom: 2px solid #ddd; /* Ligne de séparation plus épaisse et plus claire */
+            padding: 10px 0;
+        }
+        .message:last-child {
+            border-bottom: none; /* Pas de bordure pour le dernier message */
+        }
+        .modal {
+            display: none; /* Cacher par défaut */
+            position: fixed; /* Reste à l'écran */
+            z-index: 1; /* Au-dessus du contenu */
+            left: 0;
+            top: 0;
+            width: 100%; /* Largeur complète */
+            height: 100%; /* Hauteur complète */
+            overflow: auto; /* Activer le défilement si nécessaire */
+            background-color: rgba(0,0,0,0.5); /* Couleur de fond avec transparence */
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto; /* Centrer la modale */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%; /* Largeur de la modale agrandie */
+            max-width: 600px;
+            border-radius: 8px; /* Coins arrondis */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre de la modale */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .delete-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px; /* Coins arrondis pour le bouton supprimer */
+            transition: background-color 0.3s;
+        }
+        .delete-button:hover {
+            background-color: darkred; /* Couleur au survol */
+        }
+        .search-container {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; /* Permet le passage à la ligne si l'espace est insuffisant */
+            justify-content: center; /* Centrer horizontalement */
+        }
+        .search-container input,
+        .search-container select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px; /* Coins arrondis */
+            margin: 0 10px; /* Espacement horizontal */
+        }
+        footer {
+            margin-top: auto; /* Pousse le footer vers le bas */
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50; /* Couleur de fond du footer */
+            color: white; /* Couleur du texte du footer */
+            width: 100%;
+            position: relative; /* Pour garder le footer en bas de la page */
+            bottom: 0;
+        }
+        .error-message {
+            color: red; /* Couleur pour le message d'erreur */
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .password-modal {
+            display: block; /* Affiche la modale au démarrage */
+        }
+        .modal-title {
+            font-size: 20px;
+            color: #4CAF50; /* Couleur du titre de la modale */
+            margin-bottom: 15px;
+        }
+        .modal-label {
+            font-weight: bold; /* Met le texte des labels en gras */
+            margin-top: 10px;
+            display: block; /* Pour que chaque label soit sur une nouvelle ligne */
+        }
+        textarea {
+            width: 100%; /* Prend toute la largeur */
+            border: 1px solid #ccc;
+            border-radius: 5px; /* Coins arrondis */
+            padding: 10px; /* Espacement interne */
+            margin-top: 5px; /* Espacement au-dessus du textarea */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modal password-modal" id="passwordModal">
+        <div class="modal-content">
+            <span class="close" id="closePasswordModal">&times;</span>
+            <h2>Entrer le mot de passe</h2>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button id="submitPassword">Valider</button>
+            <p class="error-message" id="error-message" style="display: none;"></p>
+        </div>
+    </div>
+
+    <h1>Passation d'Équipe</h1>
+    <p>Utilisez cet espace pour laisser des notes ou messages pour les autres membres de l'équipe.</p>
+
+    <button id="openModal">Laisser une passation</button>
+
+    <div class="search-container">
+        <label for="search-date">Rechercher par date :</label>
+        <input type="date" id="search-date" name="search-date">
+        
+        <label for="start-time">Heure de début :</label>
+        <input type="time" id="start-time" name="start-time">
+        
+        <label for="end-time">Heure de fin :</label>
+        <input type="time" id="end-time" name="end-time">
+        
+        <button id="search-button">Rechercher</button>
+    </div>
+
+    <div class="modal" id="myModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 class="modal-title">Laisser une passation</h2>
+            <form id="messageForm">
+                <label class="modal-label" for="username">Nom d'utilisateur :</label>
+                <select id="username" name="username" required>
+                    <option value="">Sélectionnez un nom</option>
+                    <option value="Khawla">Khawla</option>
+                    <option value="Seddik">Seddik</option>
+                    <option value="Imane">Imane</option>
+                    <option value="Najate">Najate</option>
+                </select>
+                
+                <label class="modal-label" for="message-date">Date :</label>
+                <input type="date" id="message-date" name="message-date" required>
+                
+                <label class="modal-label" for="message">Message :</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+                
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="message-list" id="messageList"></div>
+
+    <footer>
+        Site créé par M.Seddik Elidrissi
+    </footer>
+
+    <script>
+        // Fonction pour afficher la modale de mot de passe
+        function showPasswordModal() {
+            document.getElementById("passwordModal").style.display = "block";
+        }
+
+        // Validation du mot de passe
+        document.getElementById("submitPassword").onclick = function() {
+            const password = document.getElementById("password").value;
+            const validPasswords = ["seddik", "khawla", "imane", "najate"];
+            const errorMessage = document.getElementById("error-message");
+            
+            if (validPasswords.includes(password)) {
+                document.getElementById("passwordModal").style.display = "none";
+                document.getElementById("messageList").style.display = "block"; // Affiche la liste des messages
+            } else {
+                errorMessage.textContent = "Mot de passe incorrect. Veuillez réessayer.";
+                errorMessage.style.display = "block"; // Afficher le message d'erreur
+                document.getElementById("passwordModal").style.backgroundColor = "rgba(255, 0, 0, 0.8)"; // Couleur rouge
+            }
+        }
+
+        // Ouvrir la modale de passation
+        document.getElementById("openModal").onclick = function() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        // Fermer la modale de passation
+        document.getElementById("closeModal").onclick = function() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        // Fermer la modale de mot de passe
+        document.getElementById("closePasswordModal").onclick = function() {
+            window.close(); // Ferme la page si le mot de passe est incorrect
+        }
+
+        // Ajouter un message
+        document.getElementById("messageForm").onsubmit = function(event) {
+            event.preventDefault(); // Empêche l'envoi du formulaire par défaut
+
+            const username = document.getElementById("username").value;
+            const messageContent = document.getElementById("message").value;
+            const messageDate = document.getElementById("message-date").value;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Créer un nouvel objet message
+            const newMessage = {
+                username: username,
+                content: messageContent,
+                date: messageDate,
+                time: time
+            };
+
+            const messages = JSON.parse(localStorage.getItem("messages")) || [];
+            messages.unshift(newMessage); // Ajouter le nouveau message au début de la liste
+            localStorage.setItem("messages", JSON.stringify(messages)); // Sauvegarder les messages
+
+            // Réinitialiser le formulaire
+            document.getElementById("messageForm").reset();
+            document.getElementById("myModal").style.display = "none";
+
+            // Afficher les messages mis à jour
+            loadMessages();
+        }
+
+        // Supprimer un message
+        let currentMessages = []; // Pour suivre les messages actuels affichés
+        document.getElementById("messageList").onclick = function(event) {
+            if (event.target.classList.contains("delete-button")) {
+                const index = event.target.getAttribute("data-index");
+                const messages = JSON.parse(localStorage.getItem("messages")) || [];
+                messages.splice(currentMessages[index].index, 1); // Supprimer le message correspondant
+                localStorage.setItem("messages", JSON.stringify(messages));
+                loadMessages(); // Afficher les messages à jour
+            }
+        }
+
+        // Recherche par date et heure
+        document.getElementById("search-button").onclick = function() {
+            const searchDate = document.getElementById("search-date").value;
+            const startTime = document.getElementById("start-time").value || "00:00"; // Valeur par défaut
+            const endTime = document.getElementById("end-time").value || "23:59"; // Valeur par défaut
+
+            const messages = JSON.parse(localStorage.getItem("messages")) || [];
+            const filteredMessages = messages.filter(msg => {
+                return msg.date === searchDate && msg.time >= startTime && msg.time <= endTime;
+            });
+            displayMessages(filteredMessages); // Afficher les messages filtrés
+        }
+
+        // Charger les messages au démarrage
+        loadMessages();
+
+        // Fonction pour charger et afficher les messages
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem("messages")) || [];
+            currentMessages = messages.map((msg, index) => ({ ...msg, index })); // Conserve l'index pour la suppression
+            displayMessages(currentMessages);
+        }
+
+        // Fonction pour afficher les messages
+        function displayMessages(messages) {
+            const messageList = document.getElementById("messageList");
+            messageList.innerHTML = ''; // Vider la liste des messages
+
+            messages.forEach((msg, index) => {
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("message");
+                messageDiv.innerHTML = `<strong>${msg.username}</strong><br><span>${msg.content}</span><br><small>${msg.date} à ${msg.time}</small><br><button class="delete-button" data-index="${index}">Supprimer</button>`;
+                messageList.appendChild(messageDiv);
+            });
+        }
+
+        // Afficher la modale de mot de passe au démarrage
+        window.onload = function() {
+            showPasswordModal();
+        }
+    </script>
+</body>
+</html>
