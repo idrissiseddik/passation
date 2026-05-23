@@ -228,6 +228,7 @@ footer{
     line-height:24px;
     max-height:48px;
     white-space: pre-line;
+    text-align: justify; /* Aligné des deux côtés */
 }
 
 .voir-plus{
@@ -490,7 +491,7 @@ textarea{
     background-color:#0d6efd !important;
 }
 
-/* STYLES EXCLUSIFS DISPOSITIFS MOBILES */
+/* STYLES MOBILES (AUCUN SCROLL HORIZONTAL) */
 #mobileListContainer {
     display: none;
 }
@@ -796,16 +797,13 @@ textarea{
 
 <script>
 
-/* URL DE CONFIGURATION DU SCRIPT GOOGLE SHEETS (À RENSEIGNER EXACTEMENT) */
+/* URL SCRIPT GOOGLE SHEETS */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYVYbXz6N3BCru127JY0RIAkRlmiCToDm2KZwPV276Zatb9eIlX64zoUPxjmcQGF2-/exec";
 
 /* LISTE DES PERSONNES */
 const listePersonnes = ["Khawla", "Seddik", "Salma", "Lamia", "Ichrak", "Zakia"];
-
-/* PASSWORDS */
 const motsDePasse = [...listePersonnes];
 
-/* VARIABLES POUR LES INSTANCES FLATPICKR */
 let flatpickrInstances = [];
 let passations = [];
 
@@ -855,7 +853,6 @@ function validerDate(dateStr){
     return true;
 }
 
-/* FONCTION POUR CONVERTIR UNE DATE ISO EN FORMAT JJ/MM/AAAA SI NÉCESSAIRE */
 function formaterDateISO(dateStr) {
     if (!dateStr) return "";
     if (dateStr.includes('T') || dateStr.includes('-')) {
@@ -940,7 +937,7 @@ function chargerDepuisGoogleSheet() {
         });
 }
 
-/* SYNCHRONISATION GLOBAL VERS GOOGLE SHEETS */
+/* SYNCHRONISATION GENERALE */
 function sauvegarder(){
     afficherPassations(); 
     fetch(WEB_APP_URL, {
@@ -949,8 +946,8 @@ function sauvegarder(){
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "sauvegarderTout", data: passations })
     })
-    .then(() => { console.log("Sauvegarde Google Sheets exécutée."); })
-    .catch(error => { console.error("Erreur de synchronisation:", error); });
+    .then(() => { console.log("Sauvegarde exécutée."); })
+    .catch(error => { console.error("Erreur de synchro:", error); });
 }
 
 function getNomClass(nom){
@@ -975,7 +972,7 @@ function ajouterPassation(){
         return;
     }
     if(!validerDate(date)){
-        Swal.fire({ icon:'error', title:'Date invalide', text:'Veuillez sélectionner une date valide' });
+        Swal.fire({ icon:'error', title:'Date invalide', text:'Sélectionnez une date valide' });
         return;
     }
 
@@ -996,9 +993,10 @@ function ajouterPassation(){
     document.getElementById("datePassation").value = "";
     document.getElementById("messagePassation").value = "";
 
-    Swal.fire({ icon:'success', title:'Passation ajoutée et synchronisée !', timer: 1500, showConfirmButton: false });
+    Swal.fire({ icon:'success', title:'Passation ajoutée !', timer: 1500, showConfirmButton: false });
 }
 
+/* RENDU INTELLIGENT PC ET MOBILE */
 function afficherPassations(){
     let tbody = document.getElementById("tablePassations");
     let mobileContainer = document.getElementById("mobileListContainer");
@@ -1027,10 +1025,9 @@ function afficherPassations(){
 
         let badgeColorMobile = p.etat === "En cours" ? "orange" : "green";
         let stateTextMobile = p.etat === "En cours" ? "En cours" : `Traité par: ${p.traitePar}`;
-
         let nbRep = p.reponses ? p.reponses.length : 0;
 
-        /* Rendu pour ORDINATEUR (Tableau) */
+        /* RENDU ORDINATEUR (Tableau) */
         let tr = document.createElement('tr');
         tr.innerHTML = `
             <td style="white-space:nowrap;">
@@ -1060,14 +1057,13 @@ function afficherPassations(){
             </td>
         `;
         
-        // Attacher le texte complet de l'ordi de façon sécurisée
         let btnMorePc = tr.querySelector('.btn-read-more');
         if(btnMorePc) {
             btnMorePc.addEventListener('click', function() { voirPassation(p.message); });
         }
         tbody.appendChild(tr);
 
-        /* Rendu intelligent pour MOBILE (Zéro Scroll Horizontal) */
+        /* RENDU MOBILE (Cartes fluides, Justifiées, Sans scroll horizontal) */
         let mobileCard = document.createElement('div');
         mobileCard.className = 'card-mobile-passation';
         mobileCard.style.borderLeftColor = badgeColorMobile;
@@ -1094,14 +1090,13 @@ function afficherPassations(){
                 <div class="mobile-actions">
                     <button class="btn btn-success btn-sm p-2" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
                     <button class="btn btn-primary btn-sm p-2" onclick="modifierPassation(${p.id})" title="Modifier"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn btn-info btn-sm text-white p-2" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
+                    <button class="btn btn-info btn-sm text-white p-2" onclick="modifierReponses(${p.id})" title="Réponses"><i class="fa-solid fa-comment-dots"></i></button>
                     <button class="btn btn-warning btn-sm p-2" onclick="changerEtat(${p.id})" title="État"><i class="fa-solid fa-rotate"></i></button>
                     <button class="btn btn-danger btn-sm p-2" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
         `;
         
-        // Attacher le texte complet mobile de façon sécurisée
         let btnMoreMobile = mobileCard.querySelector('.btn-read-more-mobile');
         if(btnMoreMobile) {
             btnMoreMobile.addEventListener('click', function() { voirPassation(p.message); });
@@ -1110,13 +1105,13 @@ function afficherPassations(){
     });
 }
 
+/* POPUP LIRE LA SUITE SECURISEE ET JUSTIFIEE */
 function voirPassation(message){
     Swal.fire({
         title:'Passation complète',
-        html:`<div style="text-align:left; max-height:400px; overflow:auto; padding:10px; line-height:28px; font-size:16px; white-space: pre-line;"></div>`,
+        html:`<div style="text-align: justify; max-height:400px; overflow:auto; padding:10px; line-height:28px; font-size:16px; white-space: pre-line;"></div>`,
         width:800,
         didOpen: () => {
-            // Injection sécurisée pour gérer les sauts de ligne et caractères spéciaux
             Swal.getHtmlContainer().querySelector('div').textContent = message;
         }
     });
@@ -1148,7 +1143,7 @@ function repondre(id){
     if(!passation) return;
 
     Swal.fire({
-        title:`Répondre à la passation de ${passation.personne}`,
+        title:`Répondre à ${passation.personne}`,
         html:`
             <div style="text-align:left; margin-bottom:15px;">
                 <label style="color:white; margin-bottom:10px; display:block;">Répondre en tant que :</label>
@@ -1227,7 +1222,6 @@ function modifierPassation(id){
         `,
         confirmButtonText:'Modifier',
         didOpen: () => {
-            // Injection sécurisée du texte pour éviter le bug des retours à la ligne
             document.getElementById('modifMessage').value = passation.message;
             setTimeout(() => {
                 const dateInput = document.getElementById('modifDate');
@@ -1293,7 +1287,6 @@ function modifierReponses(id){
         width:700, 
         confirmButtonText:'Fermer',
         didOpen: () => {
-            // Injection sécurisée des textes des réponses
             let containers = Swal.getHtmlContainer().querySelectorAll('.reply-text-content');
             passation.reponses.forEach((r, index) => {
                 if(containers[index]) containers[index].textContent = r.texte;
