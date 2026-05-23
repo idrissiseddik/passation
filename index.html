@@ -152,7 +152,20 @@ footer{
     vertical-align:middle;
 }
 
-/* BADGES */
+/* BADGES CLIQUABLES */
+.badge-en-cours,
+.badge-traite,
+.mobile-badge-state {
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.badge-en-cours:hover,
+.badge-traite:hover,
+.mobile-badge-state:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
 
 .badge-en-cours{
     background:orange;
@@ -160,6 +173,7 @@ footer{
     border-radius:10px;
     font-weight:bold;
     white-space:nowrap;
+    display: inline-block;
 }
 
 .badge-traite{
@@ -168,6 +182,7 @@ footer{
     border-radius:10px;
     font-weight:bold;
     white-space:nowrap;
+    display: inline-block;
 }
 
 /* BUTTONS */
@@ -428,73 +443,123 @@ textarea{
     background:#0d6efd;
 }
 
-/* FLATPICKR STYLE THEME SOMBRE */
+/* ==========================================================
+   FLATPICKR STYLE THEME SOMBRE (STYLISÉ ET MODERNISÉ)
+   ========================================================== */
 
-.flatpickr-calendar{
-    background:#1e1e1e !important;
-    border:1px solid #0d6efd !important;
-    border-radius:15px !important;
-    box-shadow:0 5px 20px rgba(0,0,0,0.5) !important;
+.flatpickr-calendar {
+    background: #1a1a1a !important;
+    border: 1px solid #0d6efd !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+    font-family: Arial, sans-serif !important;
+    padding: 6px !important;
 }
 
-.flatpickr-calendar .flatpickr-month{
-    background:#1e1e1e !important;
-    color:white !important;
+.flatpickr-calendar.arrowTop:before, .flatpickr-calendar.arrowTop:after {
+    border-bottom-color: #0d6efd !important;
+}
+.flatpickr-calendar.arrowBottom:before, .flatpickr-calendar.arrowBottom:after {
+    border-top-color: #0d6efd !important;
+}
+
+.flatpickr-calendar .flatpickr-months {
+    padding: 5px 0 !important;
+}
+
+.flatpickr-calendar .flatpickr-month {
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month {
+    color: #ffffff !important;
+    font-size: 110% !important;
 }
 
 .flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months,
-.flatpickr-calendar .flatpickr-current-month .numInputWrapper{
-    color:white !important;
-    background:#2a2a2a !important;
-}
-
-.flatpickr-calendar .flatpickr-weekday{
-    color:#0d6efd !important;
-}
-
-.flatpickr-calendar .flatpickr-day{
-    color:white !important;
-    border-radius:10px !important;
-}
-
-.flatpickr-calendar .flatpickr-day:hover{
-    background:#0d6efd !important;
-    color:white !important;
-}
-
-.flatpickr-calendar .flatpickr-day.selected{
-    background:#0d6efd !important;
-    border-color:#0d6efd !important;
-    color:white !important;
-}
-
-.flatpickr-calendar .flatpickr-day.today{
-    border-color:#00ff88 !important;
-}
-
-.flatpickr-calendar .flatpickr-day.today:hover{
-    background:#0d6efd !important;
-    border-color:#0d6efd !important;
+.flatpickr-calendar .numInputWrapper select, 
+.flatpickr-calendar .numInputWrapper input {
+    color: #ffffff !important;
+    background: #262626 !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    padding: 2px 6px !important;
+    border: 1px solid #333 !important;
 }
 
 .flatpickr-calendar .flatpickr-prev-month,
-.flatpickr-calendar .flatpickr-next-month{
-    color:white !important;
+.flatpickr-calendar .flatpickr-next-month {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    padding: 10px !important;
+    border-radius: 50% !important;
+    transition: background 0.2s, color 0.2s !important;
 }
 
 .flatpickr-calendar .flatpickr-prev-month:hover,
-.flatpickr-calendar .flatpickr-next-month:hover{
-    color:#0d6efd !important;
+.flatpickr-calendar .flatpickr-next-month:hover {
+    background: #0d6efd !important;
+    color: #ffffff !important;
+    fill: #ffffff !important;
 }
 
-.flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month{
-    background:#2a2a2a !important;
-    color:white !important;
+span.flatpickr-weekday {
+    color: #0d6efd !important;
+    font-weight: bold !important;
+    font-size: 90% !important;
+}
+
+.flatpickr-day {
+    color: #e0e0e0 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    margin: 2px 0 !important;
+}
+
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+    background: #2a2a2a !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4) !important;
+}
+
+.flatpickr-day.today {
+    border-color: #00ff88 !important;
+    color: #00ff88 !important;
+    font-weight: bold !important;
+}
+
+.flatpickr-day.today:hover {
+    background: #00ff88 !important;
+    color: #000000 !important;
+    border-color: #00ff88 !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #555555 !important;
+}
+
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover {
+    background: #222222 !important;
+    color: #888888 !important;
 }
 
 .flatpickr-calendar .numInputWrapper span.arrowUp,
-.flatpickr-calendar .numInputWrapper span.arrowDown{
-    background-color:#0d6efd !important;
+.flatpickr-calendar .numInputWrapper span.arrowDown {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
 }
 
 /* STYLES MOBILES (AUCUN SCROLL HORIZONTAL) */
@@ -1031,8 +1096,8 @@ function afficherPassations(){
 
     liste.forEach(p=>{
         let badge = p.etat === "En cours" ? 
-            `<span class="badge-en-cours">En cours</span>` : 
-            `<span class="badge-traite">Traité par : ${p.traitePar}</span>`;
+            `<span class="badge-en-cours" onclick="changerEtat(${p.id})" title="Cliquez pour changer d'état">En cours</span>` : 
+            `<span class="badge-traite" onclick="changerEtat(${p.id})" title="Cliquez pour changer d'état">Traité par : ${p.traitePar}</span>`;
 
         let badgeColorMobile = p.etat === "En cours" ? "orange" : "green";
         let stateTextMobile = p.etat === "En cours" ? "En cours" : `Traité par: ${p.traitePar}`;
@@ -1084,7 +1149,7 @@ function afficherPassations(){
                     <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
                     <div style="font-size: 11px; color: #aaa; margin-top: 2px;"><i class="fa-solid fa-calendar-day"></i> ${p.date}</div>
                 </div>
-                <span class="mobile-badge-state" style="background: ${badgeColorMobile}; color: white;">${stateTextMobile}</span>
+                <span class="mobile-badge-state" style="background: ${badgeColorMobile}; color: white;" onclick="changerEtat(${p.id})" title="Changer l'état">${stateTextMobile}</span>
             </div>
             <div class="card-mobile-body">
                 <div class="passation-text">
@@ -1153,11 +1218,9 @@ function repondre(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
 
-    // Détecter si l'overlay des réponses est actuellement affiché
     let overlay = document.getElementById('overlayReponses');
     let overlayEtaitOuvert = (overlay && overlay.style.display === 'flex');
 
-    // On masque temporairement l'overlay pour laisser place nette à la boîte Swal de réponse
     if (overlayEtaitOuvert) {
         overlay.style.display = 'none';
     }
@@ -1214,14 +1277,12 @@ function repondre(id){
             });
             sauvegarder();
             
-            // Si l'overlay était ouvert, on le réouvre avec les nouvelles données à jour
             if(overlayEtaitOuvert) {
                 ouvrirOverlay(id);
             }
             
             Swal.fire({ icon:'success', title:'Réponse ajoutée', timer: 1500, showConfirmButton: false });
         } else {
-            // Si l'utilisateur clique sur "Annuler" ou ferme la modale, on réaffiche directement l'overlay
             if(overlayEtaitOuvert) {
                 overlay.style.display = 'flex';
             }
@@ -1240,6 +1301,7 @@ function ajouterEmoji(emoji){
     }
 }
 
+/* MODIFICATION PASSATION */
 function modifierPassation(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
@@ -1289,6 +1351,7 @@ function modifierPassation(id){
     });
 }
 
+/* MODIFICATION DES REPONSES */
 function modifierReponses(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
@@ -1343,7 +1406,6 @@ function supprimerReponse(passationId, reponseId){
                 sauvegarder();
                 Swal.close();
                 
-                // Si l'overlay général est ouvert, on synchronise sa liste aussi
                 if(document.getElementById('overlayReponses').style.display === 'flex') {
                     ouvrirOverlay(passationId);
                 }
@@ -1354,6 +1416,7 @@ function supprimerReponse(passationId, reponseId){
     });
 }
 
+/* CHANGER L'ETAT (VIA BOUTON OU CLIC SUR LE BADGE) */
 function changerEtat(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
@@ -1396,6 +1459,7 @@ function changerEtat(id){
     }
 }
 
+/* SUPPRIMER PASSATION */
 function supprimerPassation(id){
     Swal.fire({
         title:'Supprimer cette passation ?',
@@ -1413,6 +1477,7 @@ function supprimerPassation(id){
     });
 }
 
+/* FENETRE OVERLAY REPONSES */
 function ouvrirOverlay(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
@@ -1421,7 +1486,6 @@ function ouvrirOverlay(id){
     let liste = document.getElementById('listeReponses');
     let btnRepondre = document.getElementById('btnOverlayRepondre');
 
-    // On associe l'ID de la passation courante au bouton répondre de l'overlay
     if(btnRepondre) {
         btnRepondre.onclick = function() { repondre(id); };
     }
