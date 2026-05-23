@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Application de Passation</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#121212;
+    color:white;
+    font-family:Arial,sans-serif;
+    overflow-x:hidden;
+}
+
+/* APP */
+
+#appPage{
+    display:none;
+    padding-top:85px;
+    padding-bottom:80px;
+}
+
+/* ERROR PAGE */
+
+#errorPage{
+    display:none;
+    width:100%;
+    height:100vh;
+    background:#b00000;
+    color:white;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    flex-direction:column;
+    padding:20px;
+}
+
+#errorPage i{
+    font-size:90px;
+    margin-bottom:20px;
+}
+
+#errorPage h1{
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+#errorPage p{
+    font-size:22px;
+    margin-bottom:30px;
+}
+
+#errorPage .btn-retry{
+    background:white;
+    color:#b00000;
+    border:none;
+    padding:12px 30px;
+    font-size:18px;
+    font-weight:bold;
+    border-radius:50px;
+    cursor:pointer;
+    transition:0.3s;
+    margin-top:20px;
+}
+
+#errorPage .btn-retry:hover{
+    transform:scale(1.05);
+    background:#f0f0f0;
+}
+
+/* HEADER */
+
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:#000;
+    padding:15px;
+    text-align:center;
+    z-index:1000;
+    border-bottom:2px solid #0d6efd;
+}
+
+/* FOOTER */
+
+footer{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#000;
+    color:white;
+    text-align:center;
+    padding:12px;
+    font-weight:bold;
+    border-top:2px solid #0d6efd;
+    z-index:1000;
+}
+
+/* CONTAINER */
+
+.main-container{
+    max-width:1500px;
+    margin:auto;
+    padding:15px;
+}
+
+/* CARD */
+
+.card-dark{
+    background:#1e1e1e;
+    border:none;
+    border-radius:20px;
+    box-shadow:0 2px 15px rgba(0,0,0,0.5);
+}
+
+/* TABLE */
+
+.table{
+    color:white;
+}
+
+.table thead{
+    background:#0d6efd;
+}
+
+.table td,
+.table th{
+    background:#1e1e1e !important;
+    color:white !important;
+    border-color:#333;
+    vertical-align:middle;
+}
+
+/* BADGES */
+
+.badge-en-cours{
+    background:orange;
+    padding:8px 12px;
+    border-radius:10px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.badge-traite{
+    background:green;
+    padding:8px 12px;
+    border-radius:10px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+/* BUTTONS */
+
+.top-buttons{
+    display:flex;
+    gap:15px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.big-btn{
+    border:none;
+    border-radius:15px;
+    padding:15px 25px;
+    font-weight:bold;
+    color:white;
+    transition:0.3s;
+}
+
+.big-btn:hover{
+    transform:scale(1.03);
+}
+
+.btn-passation{
+    background:#0d6efd;
+}
+
+.btn-filtre{
+    background:#6610f2;
+}
+
+/* ACTION BUTTONS */
+
+.action-buttons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    flex-wrap:nowrap;
+}
+
+.action-buttons .btn{
+    transition:0.2s;
+}
+
+.action-buttons .btn:hover{
+    transform:scale(1.08);
+}
+
+/* PASSATION TEXT */
+
+.passation-text{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    line-height:24px;
+    max-height:48px;
+    white-space: pre-line;
+}
+
+.voir-plus{
+    background:none;
+    border:none;
+    color:#0dcaf0;
+    margin-top:5px;
+    padding:0;
+    font-size:14px;
+}
+
+.voir-plus:hover{
+    text-decoration:underline;
+}
+
+/* OVERLAY */
+
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.96);
+    z-index:5000;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.overlay-content{
+    width:100%;
+    max-width:900px;
+    height:90vh;
+    background:#1e1e1e;
+    border-radius:20px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    border:2px solid #0d6efd;
+}
+
+.overlay-header{
+    background:#000;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #333;
+}
+
+.overlay-body{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.reply-item{
+    background:#2b2b2b;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:15px;
+    border-left:5px solid #0d6efd;
+}
+
+.close-btn{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:50%;
+    background:red;
+    color:white;
+    font-size:18px;
+}
+
+/* PERSON COLORS */
+
+.nom-khawla{
+    color:#ff4d6d;
+    font-weight:bold;
+}
+
+.nom-seddik{
+    color:#00d4ff;
+    font-weight:bold;
+}
+
+.nom-salma{
+    color:#00ff88;
+    font-weight:bold;
+}
+
+.nom-lamia{
+    color:#ffd500;
+    font-weight:bold;
+}
+
+.nom-ichrak{
+    color:#c77dff;
+    font-weight:bold;
+}
+
+.nom-zakia{
+    color:#ff8800;
+    font-weight:bold;
+}
+
+/* MODALS */
+
+.modal-content{
+    background:#1e1e1e;
+    color:white;
+    border:2px solid #0d6efd;
+    border-radius:20px;
+}
+
+.modal-header{
+    border-bottom:1px solid #333;
+}
+
+.modal-footer{
+    border-top:1px solid #333;
+}
+
+.form-control,
+.form-select{
+    background:#2a2a2a;
+    border:1px solid #444;
+    color:white;
+}
+
+.form-control:focus,
+.form-select:focus{
+    background:#2a2a2a;
+    color:white;
+    box-shadow:none;
+    border-color:#0d6efd;
+}
+
+textarea{
+    resize:none;
+}
+
+/* SWAL */
+
+.swal2-popup{
+    background:#1e1e1e !important;
+    color:white !important;
+}
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select{
+    background:#2b2b2b !important;
+    color:white !important;
+    border:1px solid #444 !important;
+}
+
+.swal2-select{
+    width:100% !important;
+    max-width:300px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding:8px 12px !important;
+}
+
+/* EMOJIS */
+
+.emoji-box{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-top:15px;
+}
+
+.emoji-btn{
+    background:#2b2b2b;
+    border:1px solid #444;
+    width:45px;
+    height:45px;
+    border-radius:12px;
+    font-size:22px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.emoji-btn:hover{
+    transform:scale(1.1);
+    background:#0d6efd;
+}
+
+/* FLATPICKR STYLE THEME SOMBRE */
+
+.flatpickr-calendar{
+    background:#1e1e1e !important;
+    border:1px solid #0d6efd !important;
+    border-radius:15px !important;
+    box-shadow:0 5px 20px rgba(0,0,0,0.5) !important;
+}
+
+.flatpickr-calendar .flatpickr-month{
+    background:#1e1e1e !important;
+    color:white !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-calendar .flatpickr-current-month .numInputWrapper{
+    color:white !important;
+    background:#2a2a2a !important;
+}
+
+.flatpickr-calendar .flatpickr-weekday{
+    color:#0d6efd !important;
+}
+
+.flatpickr-calendar .flatpickr-day{
+    color:white !important;
+    border-radius:10px !important;
+}
+
+.flatpickr-calendar .flatpickr-day:hover{
+    background:#0d6efd !important;
+    color:white !important;
+}
+
+.flatpickr-calendar .flatpickr-day.selected{
+    background:#0d6efd !important;
+    border-color:#0d6efd !important;
+    color:white !important;
+}
+
+.flatpickr-calendar .flatpickr-day.today{
+    border-color:#00ff88 !important;
+}
+
+.flatpickr-calendar .flatpickr-day.today:hover{
+    background:#0d6efd !important;
+    border-color:#0d6efd !important;
+}
+
+.flatpickr-calendar .flatpickr-prev-month,
+.flatpickr-calendar .flatpickr-next-month{
+    color:white !important;
+}
+
+.flatpickr-calendar .flatpickr-prev-month:hover,
+.flatpickr-calendar .flatpickr-next-month:hover{
+    color:#0d6efd !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month{
+    background:#2a2a2a !important;
+    color:white !important;
+}
+
+.flatpickr-calendar .numInputWrapper span.arrowUp,
+.flatpickr-calendar .numInputWrapper span.arrowDown{
+    background-color:#0d6efd !important;
+}
+
+/* STYLES EXCLUSIFS DISPOSITIFS MOBILES */
+#mobileListContainer {
+    display: none;
+}
+
+@media(max-width:768px){
+    /* Masquer le tableau horizontal */
+    .table-responsive{
+        display: none !important;
+    }
+
+    /* Activer le conteneur vertical mobile */
+    #mobileListContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 5px;
+    }
+
+    /* Style de la carte de passation mobile */
+    .card-mobile-passation {
+        background: #252525;
+        border-radius: 15px;
+        padding: 15px;
+        border-left: 5px solid #0d6efd;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .card-mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #383838;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+    }
+
+    .card-mobile-body {
+        font-size: 14px;
+        color: #e0e0e0;
+        line-height: 20px;
+    }
+
+    .card-mobile-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid #383838;
+    }
+
+    .mobile-badge-state {
+        font-size: 11px;
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .mobile-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn{
+        font-size:12px;
+    }
+
+    .big-btn{
+        width:100%;
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    .swal2-select{
+        max-width:250px !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="errorPage">
+
+    <i class="fa-solid fa-circle-xmark"></i>
+
+    <h1>Mot de passe incorrect</h1>
+
+    <p>
+        Veuillez contacter le webmaster
+        <br>
+        <strong>M.Seddik ELidrissi</strong>
+    </p>
+    
+    <button class="btn-retry" onclick="retryLogin()">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        Réessayer
+    </button>
+
+</div>
+
+<div id="appPage">
+
+<header>
+    <h3>
+        <i class="fa-solid fa-people-group"></i>
+        Application de Passation
+    </h3>
+</header>
+
+<div class="main-container">
+
+    <div class="top-buttons">
+
+        <button
+            class="big-btn btn-passation"
+            data-bs-toggle="modal"
+            data-bs-target="#modalPassation">
+            <i class="fa-solid fa-plus"></i>
+            Nouvelle Passation
+        </button>
+
+        <button
+            class="big-btn btn-filtre"
+            data-bs-toggle="modal"
+            data-bs-target="#modalFiltre">
+            <i class="fa-solid fa-filter"></i>
+            Filtres
+        </button>
+
+    </div>
+
+    <div class="card card-dark">
+
+        <div class="card-body">
+
+            <h4 class="text-primary mb-3">
+                <i class="fa-solid fa-list"></i>
+                Liste des Passations
+            </h4>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead>
+                        <tr>
+                            <th style="width:120px;">Personne</th>
+                            <th style="width:130px;">Date</th>
+                            <th style="min-width:350px;">Passation</th>
+                            <th style="width:180px;">État</th>
+                            <th style="width:120px;">Réponses</th>
+                            <th style="width:320px;">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablePassations"></tbody>
+
+                </table>
+
+            </div>
+
+            <div id="mobileListContainer"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="modalPassation">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>
+                    <i class="fa-solid fa-plus"></i>
+                    Nouvelle Passation
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label>Personne</label>
+                        <select id="personne" class="form-select">
+                            <option value="">Choisir...</option>
+                            <option>Khawla</option>
+                            <option>Seddik</option>
+                            <option>Salma</option>
+                            <option>Lamia</option>
+                            <option>Ichrak</option>
+                            <option>Zakia</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Date</label>
+                        <input
+                            type="text"
+                            id="datePassation"
+                            class="form-control datepicker"
+                            placeholder="Sélectionner une date">
+                    </div>
+
+                    <div class="col-12">
+                        <label>Passation</label>
+                        <textarea id="messagePassation" rows="6" class="form-control"></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="ajouterPassation()">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Ajouter
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="modalFiltre">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>
+                    <i class="fa-solid fa-filter"></i>
+                    Filtres
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label>Date</label>
+                    <input
+                        type="text"
+                        id="filterDate"
+                        class="form-control datepicker"
+                        placeholder="Sélectionner une date">
+                </div>
+
+                <div class="mb-3">
+                    <label>État</label>
+                    <select id="filterEtat" class="form-select">
+                        <option value="">Tous</option>
+                        <option value="En cours">En cours</option>
+                        <option value="Traité">Traité</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="appliquerFiltres()">Appliquer</button>
+                <button class="btn btn-danger" onclick="resetFiltres()">Réinitialiser</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="overlay" id="overlayReponses">
+
+    <div class="overlay-content">
+
+        <div class="overlay-header">
+            <h4>
+                <i class="fa-solid fa-comments"></i>
+                Réponses
+            </h4>
+            <button class="close-btn" onclick="fermerOverlay()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="overlay-body" id="listeReponses"></div>
+
+    </div>
+
+</div>
+
+<footer>
+    Application développée par M.Seddik ELidrissi
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+/* URL DE CONFIGURATION DU SCRIPT GOOGLE SHEETS (À RENSEIGNER EXACTEMENT) */
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYVYbXz6N3BCru127JY0RIAkRlmiCToDm2KZwPV276Zatb9eIlX64zoUPxjmcQGF2-/exec";
+
+/* LISTE DES PERSONNES */
+const listePersonnes = ["Khawla", "Seddik", "Salma", "Lamia", "Ichrak", "Zakia"];
+
+/* PASSWORDS */
+const motsDePasse = [...listePersonnes];
+
+/* VARIABLES POUR LES INSTANCES FLATPICKR */
+let flatpickrInstances = [];
+let passations = [];
+
+/* INITIALISATION DES CALENDRIERS */
+function initDatepickers(){
+    flatpickrInstances.forEach(instance => {
+        if(instance && instance.destroy) instance.destroy();
+    });
+    flatpickrInstances = [];
+    
+    const dateInputs = document.querySelectorAll('.datepicker');
+    dateInputs.forEach(input => {
+        const instance = flatpickr(input, {
+            dateFormat: "d/m/Y",
+            locale: "fr",
+            allowInput: true,
+            theme: "dark",
+            onChange: function(selectedDates) {
+                if(selectedDates.length > 0){
+                    let jour = selectedDates[0].getDate();
+                    let mois = selectedDates[0].getMonth() + 1;
+                    let annee = selectedDates[0].getFullYear();
+                    input.value = `${jour.toString().padStart(2,'0')}/${mois.toString().padStart(2,'0')}/${annee}`;
+                }
+            }
+        });
+        flatpickrInstances.push(instance);
+    });
+}
+
+function validerDate(dateStr){
+    let regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if(!regex.test(dateStr)) return false;
+    
+    let jour = parseInt(RegExp.$1);
+    let mois = parseInt(RegExp.$2);
+    let annee = parseInt(RegExp.$3);
+    
+    if(mois < 1 || mois > 12) return false;
+    if(jour < 1 || jour > 31) return false;
+    
+    if((mois === 4 || mois === 6 || mois === 9 || mois === 11) && jour > 30) return false;
+    if(mois === 2){
+        let bissextile = (annee % 4 === 0 && annee % 100 !== 0) || (annee % 400 === 0);
+        if(jour > (bissextile ? 29 : 28)) return false;
+    }
+    return true;
+}
+
+/* FONCTION POUR CONVERTIR UNE DATE ISO EN FORMAT JJ/MM/AAAA SI NÉCESSAIRE */
+function formaterDateISO(dateStr) {
+    if (!dateStr) return "";
+    if (dateStr.includes('T') || dateStr.includes('-')) {
+        try {
+            let d = new Date(dateStr);
+            if (!isNaN(d.getTime())) {
+                let jour = d.getDate().toString().padStart(2, '0');
+                let mois = (d.getMonth() + 1).toString().padStart(2, '0');
+                let annee = d.getFullYear();
+                return `${jour}/${mois}/${annee}`;
+            }
+        } catch (e) {
+            console.error("Erreur formatage date:", e);
+        }
+    }
+    return dateStr;
+}
+
+function retryLogin(){
+    document.getElementById("errorPage").style.display = "none";
+    demanderMotDePasse();
+}
+
+function demanderMotDePasse(){
+    Swal.fire({
+        title:'Accès sécurisé',
+        html:`<input type="password" id="passwordAccess" class="swal2-input" placeholder="Mot de passe">`,
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        confirmButtonText:'Accéder',
+        preConfirm:()=>{
+            let password = document.getElementById("passwordAccess").value;
+            if(password === ""){
+                Swal.showValidationMessage("Veuillez saisir le mot de passe");
+                return false;
+            }
+            return password;
+        }
+    }).then((result)=>{
+        if(result.isConfirmed){
+            if(motsDePasse.includes(result.value)){
+                document.getElementById("appPage").style.display = "block";
+                setTimeout(() => { initDatepickers(); }, 100);
+                chargerDepuisGoogleSheet();
+            }else{
+                document.getElementById("errorPage").style.display = "flex";
+            }
+        }
+    });
+}
+
+window.onload = function(){ demanderMotDePasse(); };
+
+document.addEventListener('shown.bs.modal', function(){
+    setTimeout(() => { initDatepickers(); }, 100);
+});
+
+/* RÉCUPÉRATION DU GOOGLE SHEET */
+function chargerDepuisGoogleSheet() {
+    Swal.fire({
+        title: 'Synchronisation...',
+        text: 'Récupération de la liste en temps réel depuis Google Sheets.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    fetch(WEB_APP_URL)
+        .then(response => response.json())
+        .then(data => {
+            passations = data.map(item => {
+                if (!item.reponses || !Array.isArray(item.reponses)) item.reponses = [];
+                if (!item.message) item.message = "";
+                item.date = formaterDateISO(item.date);
+                return item;
+            });
+            afficherPassations();
+            Swal.close();
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de joindre Google Sheets.' });
+        });
+}
+
+/* SYNCHRONISATION GLOBAL VERS GOOGLE SHEETS */
+function sauvegarder(){
+    afficherPassations(); 
+    fetch(WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sauvegarderTout", data: passations })
+    })
+    .then(() => { console.log("Sauvegarde Google Sheets exécutée."); })
+    .catch(error => { console.error("Erreur de synchronisation:", error); });
+}
+
+function getNomClass(nom){
+    switch(nom){
+        case "Khawla": return "nom-khawla";
+        case "Seddik": return "nom-seddik";
+        case "Salma": return "nom-salma";
+        case "Lamia": return "nom-lamia";
+        case "Ichrak": return "nom-ichrak";
+        case "Zakia": return "nom-zakia";
+        default: return "";
+    }
+}
+
+function ajouterPassation(){
+    let personne = document.getElementById("personne").value;
+    let date = document.getElementById("datePassation").value;
+    let message = document.getElementById("messagePassation").value;
+
+    if(personne === "" || date === "" || message.trim() === ""){
+        Swal.fire({ icon:'warning', title:'Tous les champs sont obligatoires' });
+        return;
+    }
+    if(!validerDate(date)){
+        Swal.fire({ icon:'error', title:'Date invalide', text:'Veuillez sélectionner une date valide' });
+        return;
+    }
+
+    passations.unshift({
+        id: Date.now(),
+        personne,
+        date,
+        message: message.trim(),
+        etat: "En cours",
+        traitePar: "",
+        reponses: []
+    });
+
+    sauvegarder();
+    bootstrap.Modal.getInstance(document.getElementById('modalPassation')).hide();
+
+    document.getElementById("personne").value = "";
+    document.getElementById("datePassation").value = "";
+    document.getElementById("messagePassation").value = "";
+
+    Swal.fire({ icon:'success', title:'Passation ajoutée et synchronisée !', timer: 1500, showConfirmButton: false });
+}
+
+function afficherPassations(){
+    let tbody = document.getElementById("tablePassations");
+    let mobileContainer = document.getElementById("mobileListContainer");
+    let filterDate = document.getElementById("filterDate").value;
+    let filterEtat = document.getElementById("filterEtat").value;
+
+    tbody.innerHTML = "";
+    mobileContainer.innerHTML = "";
+
+    let liste = passations.filter(p=>{
+        let okDate = filterDate === "" || p.date === filterDate;
+        let okEtat = filterEtat === "" || p.etat === filterEtat;
+        return okDate && okEtat;
+    });
+
+    if(liste.length === 0){
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center">Aucune passation trouvée</td></tr>`;
+        mobileContainer.innerHTML = `<div class="text-center p-4 text-muted">Aucune passation trouvée</div>`;
+        return;
+    }
+
+    liste.forEach(p=>{
+        let badge = p.etat === "En cours" ? 
+            `<span class="badge-en-cours">En cours</span>` : 
+            `<span class="badge-traite">Traité par : ${p.traitePar}</span>`;
+
+        let badgeColorMobile = p.etat === "En cours" ? "orange" : "green";
+        let stateTextMobile = p.etat === "En cours" ? "En cours" : `Traité par: ${p.traitePar}`;
+
+        let messageEscaped = p.message.replace(/'/g, "\\'").replace(/`/g, '\\`').replace(/"/g, '&quot;');
+        let nbRep = p.reponses ? p.reponses.length : 0;
+
+        /* Rendu pour ORDINATEUR (Tableau) */
+        tbody.innerHTML += `
+            <tr>
+                <td style="white-space:nowrap;">
+                    <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
+                </td>
+                <td style="white-space:nowrap;">${p.date}</td>
+                <td>
+                    <div class="passation-text">
+                        ${p.message.substring(0, 120)}${p.message.length > 120 ? '...' : ''}
+                    </div>
+                    ${p.message.length > 120 ? `<button class="voir-plus" onclick="voirPassation('${messageEscaped}')">Voir plus</button>` : ""}
+                </td>
+                <td style="white-space:nowrap;">${badge}</td>
+                <td class="text-center">
+                    <button class="btn btn-info btn-sm text-white" onclick="ouvrirOverlay(${p.id})" title="Voir réponses">
+                        <i class="fa-solid fa-comments"></i> (${nbRep})
+                    </button>
+                </td>
+                <td class="text-center">
+                    <div class="action-buttons">
+                        <button class="btn btn-success btn-sm" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
+                        <button class="btn btn-primary btn-sm" onclick="modifierPassation(${p.id})" title="Modifier passation"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-info btn-sm text-white" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
+                        <button class="btn btn-warning btn-sm" onclick="changerEtat(${p.id})" title="Changer état"><i class="fa-solid fa-rotate"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        /* Rendu intelligent pour MOBILE (Zéro Scroll Horizontal) */
+        mobileContainer.innerHTML += `
+            <div class="card-mobile-passation" style="border-left-color: ${badgeColorMobile};">
+                <div class="card-mobile-header">
+                    <div>
+                        <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
+                        <div style="font-size: 11px; color: #aaa; margin-top: 2px;"><i class="fa-solid fa-calendar-day"></i> ${p.date}</div>
+                    </div>
+                    <span class="mobile-badge-state" style="background: ${badgeColorMobile}; color: white;">${stateTextMobile}</span>
+                </div>
+                <div class="card-mobile-body">
+                    <div class="passation-text">
+                        ${p.message.substring(0, 110)}${p.message.length > 110 ? '...' : ''}
+                    </div>
+                    ${p.message.length > 110 ? `<button class="voir-plus" onclick="voirPassation('${messageEscaped}')">Lire la suite</button>` : ""}
+                </div>
+                <div class="card-mobile-footer">
+                    <div>
+                        <button class="btn btn-info btn-sm text-white px-2 py-1" onclick="ouvrirOverlay(${p.id})">
+                            <i class="fa-solid fa-comments"></i> Réponses (${nbRep})
+                        </button>
+                    </div>
+                    <div class="mobile-actions">
+                        <button class="btn btn-success btn-sm p-2" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
+                        <button class="btn btn-primary btn-sm p-2" onclick="modifierPassation(${p.id})" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-info btn-sm text-white p-2" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
+                        <button class="btn btn-warning btn-sm p-2" onclick="changerEtat(${p.id})" title="État"><i class="fa-solid fa-rotate"></i></button>
+                        <button class="btn btn-danger btn-sm p-2" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function voirPassation(message){
+    Swal.fire({
+        title:'Passation complète',
+        html:`<div style="text-align:left; max-height:400px; overflow:auto; padding:10px; line-height:28px; font-size:16px; white-space: pre-line;">${message}</div>`,
+        width:800
+    });
+}
+
+function appliquerFiltres(){
+    bootstrap.Modal.getInstance(document.getElementById('modalFiltre')).hide();
+    afficherPassations();
+}
+
+function resetFiltres(){
+    document.getElementById("filterDate").value = "";
+    document.getElementById("filterEtat").value = "";
+    afficherPassations();
+    bootstrap.Modal.getInstance(document.getElementById('modalFiltre')).hide();
+}
+
+function genererOptionsPersonnes(selectedValue = ""){
+    let options = '';
+    listePersonnes.forEach(personne => {
+        let selected = (personne === selectedValue) ? 'selected' : '';
+        options += `<option value="${personne}" ${selected}>${personne}</option>`;
+    });
+    return options;
+}
+
+function repondre(id){
+    let passation = passations.find(p => p.id === id);
+    if(!passation) return;
+
+    Swal.fire({
+        title:`Répondre à la passation de ${passation.personne}`,
+        html:`
+            <div style="text-align:left; margin-bottom:15px;">
+                <label style="color:white; margin-bottom:10px; display:block;">Répondre en tant que :</label>
+                <select id="repondrePersonne" class="swal2-select" style="width:100%; padding:8px 12px;">
+                    <option value="">Choisir...</option>
+                    ${genererOptionsPersonnes()}
+                </select>
+            </div>
+            <div style="text-align:left; margin-bottom:15px;">
+                <label style="color:white; margin-bottom:10px; display:block;">Votre réponse :</label>
+                <textarea id="reponseTexte" class="swal2-textarea" rows="5" placeholder="Votre réponse..."></textarea>
+            </div>
+            <div class="emoji-box">
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('😊')">😊</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('👍')">👍</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('✅')">✅</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('⚠️')">⚠️</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('🔔')">🔔</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('❌')">❌</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('📅')">📅</button>
+                <button type="button" class="emoji-btn" onclick="ajouterEmoji('⏰')">⏰</button>
+            </div>
+        `,
+        confirmButtonText:'Envoyer',
+        preConfirm:()=>{
+            let selectPersonne = document.getElementById('repondrePersonne');
+            let reponse = document.getElementById('reponseTexte');
+            if(!selectPersonne || !reponse) return false;
+
+            let personneReponse = selectPersonne.value;
+            let texte = reponse.value;
+
+            if(!personneReponse){ Swal.showValidationMessage('Veuillez choisir qui répond'); return false; }
+            if(!texte.trim()){ Swal.showValidationMessage('Veuillez écrire une réponse'); return false; }
+            return {personne: personneReponse, texte: texte.trim()};
+        }
+    }).then((result)=>{
+        if(result.isConfirmed){
+            if(!passation.reponses) passation.reponses = [];
+            passation.reponses.push({
+                id: Date.now(),
+                personne: result.value.personne,
+                texte: result.value.texte,
+                date: new Date().toLocaleDateString('fr-FR'),
+                heure: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+            });
+            sauvegarder();
+            Swal.fire({ icon:'success', title:'Réponse ajoutée', timer: 1500, showConfirmButton: false });
+        }
+    });
+}
+
+function ajouterEmoji(emoji){
+    let textarea = document.getElementById('reponseTexte');
+    if(textarea){
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
+    }
+}
+
+function modifierPassation(id){
+    let passation = passations.find(p => p.id === id);
+    if(!passation) return;
+
+    Swal.fire({
+        title:'Modifier la passation',
+        html:`
+            <select id="modifPersonne" class="swal2-select" style="margin-bottom:15px; width:100%; padding:8px 12px;">
+                ${genererOptionsPersonnes(passation.personne)}
+            </select>
+            <input type="text" id="modifDate" class="swal2-input" value="${passation.date}" placeholder="JJ/MM/AAAA" style="margin-bottom:15px;">
+            <textarea id="modifMessage" class="swal2-textarea" rows="6">${passation.message}</textarea>
+        `,
+        confirmButtonText:'Modifier',
+        didOpen: () => {
+            setTimeout(() => {
+                const dateInput = document.getElementById('modifDate');
+                if(dateInput){
+                    flatpickr(dateInput, { dateFormat: "d/m/Y", locale: "fr", allowInput: true, defaultDate: passation.date });
+                }
+            }, 50);
+        },
+        preConfirm:()=>{
+            let personne = document.getElementById('modifPersonne');
+            let date = document.getElementById('modifDate');
+            let message = document.getElementById('modifMessage');
+
+            if(!personne || !date || !message) return false;
+            let personneVal = personne.value;
+            let dateVal = date.value;
+            let messageVal = message.value;
+
+            if(!personneVal || !dateVal || !messageVal.trim()){ Swal.showValidationMessage('Tous les champs sont obligatoires'); return false; }
+            if(!validerDate(dateVal)){ Swal.showValidationMessage('Date invalide (JJ/MM/AAAA)'); return false; }
+
+            return {personne: personneVal, date: dateVal, message: messageVal.trim()};
+        }
+    }).then((result)=>{
+        if(result.isConfirmed){
+            passation.personne = result.value.personne;
+            passation.date = result.value.date;
+            passation.message = result.value.message;
+            sauvegarder();
+            Swal.fire({ icon:'success', title:'Passation modifiée', timer: 1500, showConfirmButton: false });
+        }
+    });
+}
+
+function modifierReponses(id){
+    let passation = passations.find(p => p.id === id);
+    if(!passation) return;
+
+    if(!passation.reponses || passation.reponses.length === 0){
+        Swal.fire({ icon:'info', title:'Aucune réponse', text:'Cette passation n\'a pas encore de réponses' });
+        return;
+    }
+
+    let reponsesHtml = '<div style="max-height:400px; overflow:auto; text-align:left;">';
+    passation.reponses.forEach((r, index) => {
+        reponsesHtml += `
+            <div class="reply-item">
+                <strong>Réponse ${index + 1}</strong><br>
+                <strong class="${getNomClass(r.personne)}">${r.personne}</strong><br>
+                <small style="color:#aaa;">${r.date} à ${r.heure}</small>
+                <p style="margin-top:10px; white-space: pre-line;">${r.texte}</p>
+                <button class="btn btn-danger btn-sm" onclick="supprimerReponse(${id}, ${r.id})">
+                    <i class="fa-solid fa-trash"></i> Supprimer
+                </button>
+            </div>
+        `;
+    });
+    reponsesHtml += '</div>';
+
+    Swal.fire({ title:'Modifier les réponses', html: reponsesHtml, width:700, confirmButtonText:'Fermer' });
+}
+
+function supprimerReponse(passationId, reponseId){
+    Swal.fire({
+        title:'Supprimer cette réponse ?',
+        icon:'warning',
+        showCancelButton:true,
+        confirmButtonColor:'#d33',
+        confirmButtonText:'Oui, supprimer'
+    }).then((result)=>{
+        if(result.isConfirmed){
+            let passation = passations.find(p => p.id === passationId);
+            if(passation){
+                passation.reponses = passation.reponses.filter(r => r.id !== reponseId);
+                sauvegarder();
+                Swal.close();
+                setTimeout(() => { modifierReponses(passationId); }, 200);
+            }
+        }
+    });
+}
+
+function changerEtat(id){
+    let passation = passations.find(p => p.id === id);
+    if(!passation) return;
+
+    let nouveauEtat = passation.etat === "En cours" ? "Traité" : "En cours";
+
+    if(nouveauEtat === "Traité"){
+        Swal.fire({
+            title:'Passer à Traité',
+            html:`
+                <div style="text-align:left; margin-bottom:15px;">
+                    <label style="color:white; margin-bottom:10px; display:block;">Traité par :</label>
+                    <select id="traiteParSelect" class="swal2-select" style="width:100%; padding:8px 12px;">
+                        <option value="">Choisir...</option>
+                        ${genererOptionsPersonnes(passation.traitePar)}
+                    </select>
+                </div>
+            `,
+            confirmButtonText:'Valider',
+            preConfirm:()=>{
+                let select = document.getElementById('traiteParSelect');
+                if(!select) return false;
+                let nom = select.value;
+                if(!nom){ Swal.showValidationMessage('Veuillez choisir la personne qui a traité'); return false; }
+                return nom;
+            }
+        }).then((result)=>{
+            if(result.isConfirmed){
+                passation.etat = nouveauEtat;
+                passation.traitePar = result.value;
+                sauvegarder();
+                Swal.fire({ icon:'success', title:'État modifié', timer: 1500, showConfirmButton: false });
+            }
+        });
+    }else{
+        passation.etat = nouveauEtat;
+        passation.traitePar = "";
+        sauvegarder();
+        Swal.fire({ icon:'success', title:'État modifié', timer: 1500, showConfirmButton: false });
+    }
+}
+
+function supprimerPassation(id){
+    Swal.fire({
+        title:'Supprimer cette passation ?',
+        text:'Cette action effacera la ligne définitivement sur Google Sheets',
+        icon:'warning',
+        showCancelButton:true,
+        confirmButtonColor:'#d33',
+        confirmButtonText:'Oui, supprimer'
+    }).then((result)=>{
+        if(result.isConfirmed){
+            passations = passations.filter(p => p.id !== id);
+            sauvegarder();
+            Swal.fire({ icon:'success', title:'Passation supprimée', timer: 1500, showConfirmButton: false });
+        }
+    });
+}
+
+function ouvrirOverlay(id){
+    let passation = passations.find(p => p.id === id);
+    if(!passation) return;
+
+    let overlay = document.getElementById('overlayReponses');
+    let liste = document.getElementById('listeReponses');
+
+    if(!passation.reponses || passation.reponses.length === 0){
+        liste.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fa-solid fa-comment-slash" style="font-size:50px;"></i>
+                <p class="mt-3">Aucune réponse pour cette passation</p>
+            </div>
+        `;
+    }else{
+        liste.innerHTML = '';
+        passation.reponses.forEach((r, index) => {
+            let div = document.createElement('div');
+            div.className = 'reply-item';
+            div.innerHTML = `
+                <strong>Réponse ${index + 1}</strong><br>
+                <strong class="${getNomClass(r.personne)}">${r.personne}</strong><br>
+                <small class="text-muted d-block" style="color:#aaa!important;">${r.date} à ${r.heure}</small>
+                <p class="mt-2 mb-0" style="white-space: pre-line;">${r.texte}</p>
+            `;
+            liste.appendChild(div);
+        });
+    }
+    overlay.style.display = 'flex';
+}
+
+function fermerOverlay(){
+    document.getElementById('overlayReponses').style.display = 'none';
+    document.getElementById('listeReponses').innerHTML = '';
+}
+
+</script>
+</body>
+</html>
