@@ -281,6 +281,12 @@ footer{
     border-bottom:1px solid #333;
 }
 
+.overlay-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
 .overlay-body{
     flex:1;
     overflow-y:auto;
@@ -778,9 +784,14 @@ textarea{
                 <i class="fa-solid fa-comments"></i>
                 Réponses
             </h4>
-            <button class="close-btn" onclick="fermerOverlay()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div class="overlay-actions">
+                <button id="btnOverlayRepondre" class="btn btn-success btn-sm">
+                    <i class="fa-solid fa-reply"></i> Répondre
+                </button>
+                <button class="close-btn" onclick="fermerOverlay()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         </div>
 
         <div class="overlay-body" id="listeReponses"></div>
@@ -1142,6 +1153,15 @@ function repondre(id){
     let passation = passations.find(p => p.id === id);
     if(!passation) return;
 
+    // Détecter si l'overlay des réponses est actuellement affiché
+    let overlay = document.getElementById('overlayReponses');
+    let overlayEtaitOuvert = (overlay && overlay.style.display === 'flex');
+
+    // On masque temporairement l'overlay pour laisser place nette à la boîte Swal de réponse
+    if (overlayEtaitOuvert) {
+        overlay.style.display = 'none';
+    }
+
     Swal.fire({
         title:`Répondre à ${passation.personne}`,
         html:`
@@ -1168,6 +1188,8 @@ function repondre(id){
             </div>
         `,
         confirmButtonText:'Envoyer',
+        showCancelButton: true,
+        cancelButtonText: 'Annuler',
         preConfirm:()=>{
             let selectPersonne = document.getElementById('repondrePersonne');
             let reponse = document.getElementById('reponseTexte');
@@ -1191,7 +1213,18 @@ function repondre(id){
                 heure: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
             });
             sauvegarder();
+            
+            // Si l'overlay était ouvert, on le réouvre avec les nouvelles données à jour
+            if(overlayEtaitOuvert) {
+                ouvrirOverlay(id);
+            }
+            
             Swal.fire({ icon:'success', title:'Réponse ajoutée', timer: 1500, showConfirmButton: false });
+        } else {
+            // Si l'utilisateur clique sur "Annuler" ou ferme la modale, on réaffiche directement l'overlay
+            if(overlayEtaitOuvert) {
+                overlay.style.display = 'flex';
+            }
         }
     });
 }
@@ -1309,6 +1342,12 @@ function supprimerReponse(passationId, reponseId){
                 passation.reponses = passation.reponses.filter(r => r.id !== reponseId);
                 sauvegarder();
                 Swal.close();
+                
+                // Si l'overlay général est ouvert, on synchronise sa liste aussi
+                if(document.getElementById('overlayReponses').style.display === 'flex') {
+                    ouvrirOverlay(passationId);
+                }
+                
                 setTimeout(() => { modifierReponses(passationId); }, 200);
             }
         }
@@ -1380,6 +1419,12 @@ function ouvrirOverlay(id){
 
     let overlay = document.getElementById('overlayReponses');
     let liste = document.getElementById('listeReponses');
+    let btnRepondre = document.getElementById('btnOverlayRepondre');
+
+    // On associe l'ID de la passation courante au bouton répondre de l'overlay
+    if(btnRepondre) {
+        btnRepondre.onclick = function() { repondre(id); };
+    }
 
     if(!passation.reponses || passation.reponses.length === 0){
         liste.innerHTML = `
