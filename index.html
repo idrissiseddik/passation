@@ -496,12 +496,10 @@ textarea{
 }
 
 @media(max-width:768px){
-    /* Masquer le tableau horizontal */
     .table-responsive{
         display: none !important;
     }
 
-    /* Activer le conteneur vertical mobile */
     #mobileListContainer {
         display: flex;
         flex-direction: column;
@@ -509,7 +507,6 @@ textarea{
         margin-top: 5px;
     }
 
-    /* Style de la carte de passation mobile */
     .card-mobile-passation {
         background: #252525;
         border-radius: 15px;
@@ -1031,80 +1028,97 @@ function afficherPassations(){
         let badgeColorMobile = p.etat === "En cours" ? "orange" : "green";
         let stateTextMobile = p.etat === "En cours" ? "En cours" : `Traité par: ${p.traitePar}`;
 
-        let messageEscaped = p.message.replace(/'/g, "\\'").replace(/`/g, '\\`').replace(/"/g, '&quot;');
         let nbRep = p.reponses ? p.reponses.length : 0;
 
         /* Rendu pour ORDINATEUR (Tableau) */
-        tbody.innerHTML += `
-            <tr>
-                <td style="white-space:nowrap;">
-                    <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
-                </td>
-                <td style="white-space:nowrap;">${p.date}</td>
-                <td>
-                    <div class="passation-text">
-                        ${p.message.substring(0, 120)}${p.message.length > 120 ? '...' : ''}
-                    </div>
-                    ${p.message.length > 120 ? `<button class="voir-plus" onclick="voirPassation('${messageEscaped}')">Voir plus</button>` : ""}
-                </td>
-                <td style="white-space:nowrap;">${badge}</td>
-                <td class="text-center">
-                    <button class="btn btn-info btn-sm text-white" onclick="ouvrirOverlay(${p.id})" title="Voir réponses">
-                        <i class="fa-solid fa-comments"></i> (${nbRep})
-                    </button>
-                </td>
-                <td class="text-center">
-                    <div class="action-buttons">
-                        <button class="btn btn-success btn-sm" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
-                        <button class="btn btn-primary btn-sm" onclick="modifierPassation(${p.id})" title="Modifier passation"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-info btn-sm text-white" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
-                        <button class="btn btn-warning btn-sm" onclick="changerEtat(${p.id})" title="Changer état"><i class="fa-solid fa-rotate"></i></button>
-                        <button class="btn btn-danger btn-sm" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </td>
-            </tr>
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="white-space:nowrap;">
+                <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
+            </td>
+            <td style="white-space:nowrap;">${p.date}</td>
+            <td>
+                <div class="passation-text">
+                    ${p.message.substring(0, 120)}${p.message.length > 120 ? '...' : ''}
+                </div>
+                ${p.message.length > 120 ? `<button class="voir-plus btn-read-more">Voir plus</button>` : ""}
+            </td>
+            <td style="white-space:nowrap;">${badge}</td>
+            <td class="text-center">
+                <button class="btn btn-info btn-sm text-white" onclick="ouvrirOverlay(${p.id})" title="Voir réponses">
+                    <i class="fa-solid fa-comments"></i> (${nbRep})
+                </button>
+            </td>
+            <td class="text-center">
+                <div class="action-buttons">
+                    <button class="btn btn-success btn-sm" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
+                    <button class="btn btn-primary btn-sm" onclick="modifierPassation(${p.id})" title="Modifier passation"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-info btn-sm text-white" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
+                    <button class="btn btn-warning btn-sm" onclick="changerEtat(${p.id})" title="Changer état"><i class="fa-solid fa-rotate"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
         `;
+        
+        // Attacher le texte complet de l'ordi de façon sécurisée
+        let btnMorePc = tr.querySelector('.btn-read-more');
+        if(btnMorePc) {
+            btnMorePc.addEventListener('click', function() { voirPassation(p.message); });
+        }
+        tbody.appendChild(tr);
 
         /* Rendu intelligent pour MOBILE (Zéro Scroll Horizontal) */
-        mobileContainer.innerHTML += `
-            <div class="card-mobile-passation" style="border-left-color: ${badgeColorMobile};">
-                <div class="card-mobile-header">
-                    <div>
-                        <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
-                        <div style="font-size: 11px; color: #aaa; margin-top: 2px;"><i class="fa-solid fa-calendar-day"></i> ${p.date}</div>
-                    </div>
-                    <span class="mobile-badge-state" style="background: ${badgeColorMobile}; color: white;">${stateTextMobile}</span>
+        let mobileCard = document.createElement('div');
+        mobileCard.className = 'card-mobile-passation';
+        mobileCard.style.borderLeftColor = badgeColorMobile;
+        mobileCard.innerHTML = `
+            <div class="card-mobile-header">
+                <div>
+                    <strong class="${getNomClass(p.personne)}">${p.personne}</strong>
+                    <div style="font-size: 11px; color: #aaa; margin-top: 2px;"><i class="fa-solid fa-calendar-day"></i> ${p.date}</div>
                 </div>
-                <div class="card-mobile-body">
-                    <div class="passation-text">
-                        ${p.message.substring(0, 110)}${p.message.length > 110 ? '...' : ''}
-                    </div>
-                    ${p.message.length > 110 ? `<button class="voir-plus" onclick="voirPassation('${messageEscaped}')">Lire la suite</button>` : ""}
+                <span class="mobile-badge-state" style="background: ${badgeColorMobile}; color: white;">${stateTextMobile}</span>
+            </div>
+            <div class="card-mobile-body">
+                <div class="passation-text">
+                    ${p.message.substring(0, 110)}${p.message.length > 110 ? '...' : ''}
                 </div>
-                <div class="card-mobile-footer">
-                    <div>
-                        <button class="btn btn-info btn-sm text-white px-2 py-1" onclick="ouvrirOverlay(${p.id})">
-                            <i class="fa-solid fa-comments"></i> Réponses (${nbRep})
-                        </button>
-                    </div>
-                    <div class="mobile-actions">
-                        <button class="btn btn-success btn-sm p-2" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
-                        <button class="btn btn-primary btn-sm p-2" onclick="modifierPassation(${p.id})" title="Modifier"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-info btn-sm text-white p-2" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
-                        <button class="btn btn-warning btn-sm p-2" onclick="changerEtat(${p.id})" title="État"><i class="fa-solid fa-rotate"></i></button>
-                        <button class="btn btn-danger btn-sm p-2" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                ${p.message.length > 110 ? `<button class="voir-plus btn-read-more-mobile">Lire la suite</button>` : ""}
+            </div>
+            <div class="card-mobile-footer">
+                <div>
+                    <button class="btn btn-info btn-sm text-white px-2 py-1" onclick="ouvrirOverlay(${p.id})">
+                        <i class="fa-solid fa-comments"></i> Réponses (${nbRep})
+                    </button>
+                </div>
+                <div class="mobile-actions">
+                    <button class="btn btn-success btn-sm p-2" onclick="repondre(${p.id})" title="Répondre"><i class="fa-solid fa-reply"></i></button>
+                    <button class="btn btn-primary btn-sm p-2" onclick="modifierPassation(${p.id})" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-info btn-sm text-white p-2" onclick="modifierReponses(${p.id})" title="Modifier réponses"><i class="fa-solid fa-comment-dots"></i></button>
+                    <button class="btn btn-warning btn-sm p-2" onclick="changerEtat(${p.id})" title="État"><i class="fa-solid fa-rotate"></i></button>
+                    <button class="btn btn-danger btn-sm p-2" onclick="supprimerPassation(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
         `;
+        
+        // Attacher le texte complet mobile de façon sécurisée
+        let btnMoreMobile = mobileCard.querySelector('.btn-read-more-mobile');
+        if(btnMoreMobile) {
+            btnMoreMobile.addEventListener('click', function() { voirPassation(p.message); });
+        }
+        mobileContainer.appendChild(mobileCard);
     });
 }
 
 function voirPassation(message){
     Swal.fire({
         title:'Passation complète',
-        html:`<div style="text-align:left; max-height:400px; overflow:auto; padding:10px; line-height:28px; font-size:16px; white-space: pre-line;">${message}</div>`,
-        width:800
+        html:`<div style="text-align:left; max-height:400px; overflow:auto; padding:10px; line-height:28px; font-size:16px; white-space: pre-line;"></div>`,
+        width:800,
+        didOpen: () => {
+            // Injection sécurisée pour gérer les sauts de ligne et caractères spéciaux
+            Swal.getHtmlContainer().querySelector('div').textContent = message;
+        }
     });
 }
 
@@ -1209,10 +1223,12 @@ function modifierPassation(id){
                 ${genererOptionsPersonnes(passation.personne)}
             </select>
             <input type="text" id="modifDate" class="swal2-input" value="${passation.date}" placeholder="JJ/MM/AAAA" style="margin-bottom:15px;">
-            <textarea id="modifMessage" class="swal2-textarea" rows="6">${passation.message}</textarea>
+            <textarea id="modifMessage" class="swal2-textarea" rows="6"></textarea>
         `,
         confirmButtonText:'Modifier',
         didOpen: () => {
+            // Injection sécurisée du texte pour éviter le bug des retours à la ligne
+            document.getElementById('modifMessage').value = passation.message;
             setTimeout(() => {
                 const dateInput = document.getElementById('modifDate');
                 if(dateInput){
@@ -1262,7 +1278,7 @@ function modifierReponses(id){
                 <strong>Réponse ${index + 1}</strong><br>
                 <strong class="${getNomClass(r.personne)}">${r.personne}</strong><br>
                 <small style="color:#aaa;">${r.date} à ${r.heure}</small>
-                <p style="margin-top:10px; white-space: pre-line;">${r.texte}</p>
+                <p style="margin-top:10px; white-space: pre-line;" class="reply-text-content"></p>
                 <button class="btn btn-danger btn-sm" onclick="supprimerReponse(${id}, ${r.id})">
                     <i class="fa-solid fa-trash"></i> Supprimer
                 </button>
@@ -1271,7 +1287,19 @@ function modifierReponses(id){
     });
     reponsesHtml += '</div>';
 
-    Swal.fire({ title:'Modifier les réponses', html: reponsesHtml, width:700, confirmButtonText:'Fermer' });
+    Swal.fire({ 
+        title:'Modifier les réponses', 
+        html: reponsesHtml, 
+        width:700, 
+        confirmButtonText:'Fermer',
+        didOpen: () => {
+            // Injection sécurisée des textes des réponses
+            let containers = Swal.getHtmlContainer().querySelectorAll('.reply-text-content');
+            passation.reponses.forEach((r, index) => {
+                if(containers[index]) containers[index].textContent = r.texte;
+            });
+        }
+    });
 }
 
 function supprimerReponse(passationId, reponseId){
@@ -1376,8 +1404,9 @@ function ouvrirOverlay(id){
                 <strong>Réponse ${index + 1}</strong><br>
                 <strong class="${getNomClass(r.personne)}">${r.personne}</strong><br>
                 <small class="text-muted d-block" style="color:#aaa!important;">${r.date} à ${r.heure}</small>
-                <p class="mt-2 mb-0" style="white-space: pre-line;">${r.texte}</p>
+                <p class="mt-2 mb-0 reply-view-text" style="white-space: pre-line;"></p>
             `;
+            div.querySelector('.reply-view-text').textContent = r.texte;
             liste.appendChild(div);
         });
     }
